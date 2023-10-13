@@ -28,11 +28,10 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --target x86_64-unknown-linux-musl --release
+          args: --target x86_64-unknown-linux-gnu --release
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v1
         with:
           name: ${{ github.event.inputs.version }}
           tag_name: ${{ github.event.inputs.version }}
-          files: /app/target/x86_64-unknown-linux-musl/release/reload
+          files: target/x86_64-unknown-linux-gnu/release/reload
