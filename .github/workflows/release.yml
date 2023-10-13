@@ -30,8 +30,21 @@ jobs:
           command: build
           args: --target x86_64-unknown-linux-gnu --release
 
+      - uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --target aarch64-unknown-linux-gnu --release
+
+      - run: mv target/x86_64-unknown-linux-gnu/release/reload reload_x86_64-unknown-linux-gnu
+      - run: mv target/aarch64-unknown-linux-gnu/release/reload reload_aarch64-unknown-linux-gnu
+
       - uses: softprops/action-gh-release@v1
         with:
           name: ${{ github.event.inputs.version }}
           tag_name: ${{ github.event.inputs.version }}
-          files: target/x86_64-unknown-linux-gnu/release/reload
+          files: |
+            reload_x86_64-unknown-linux-gnu
+            reload_aarch64-unknown-linux-gnu
+            LICENSE
+            readme.md
