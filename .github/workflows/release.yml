@@ -29,15 +29,28 @@ jobs:
           use-cross: true
           command: build
           args: --target x86_64-unknown-linux-gnu --release
+      - run: mv target/x86_64-unknown-linux-gnu/release/reload reload_x86_64-unknown-linux-gnu
 
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
           args: --target aarch64-unknown-linux-gnu --release
-
-      - run: mv target/x86_64-unknown-linux-gnu/release/reload reload_x86_64-unknown-linux-gnu
       - run: mv target/aarch64-unknown-linux-gnu/release/reload reload_aarch64-unknown-linux-gnu
+
+      - uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --target x86_64-apple-darwin --release
+      - run: mv target/x86_64-apple-darwin/release/reload reload_x86_64-apple-darwin
+
+      - uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --target aarch64-apple-darwin --release
+      - run: mv target/aarch64-apple-darwin/release/reload reload_aarch64-apple-darwin
 
       - uses: softprops/action-gh-release@v1
         with:
@@ -46,5 +59,7 @@ jobs:
           files: |
             reload_x86_64-unknown-linux-gnu
             reload_aarch64-unknown-linux-gnu
+            reload_x86_64-apple-darwin
+            reload_aarch64-apple-darwin
             LICENSE
             readme.md
