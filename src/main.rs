@@ -5,6 +5,7 @@ use notify_debouncer_mini::new_debouncer;
 use serde::{de, Deserialize};
 use std::path::Path;
 use std::process::Command;
+use std::thread::JoinHandle;
 use std::time::Duration;
 use std::{fs, process, thread};
 
@@ -28,12 +29,17 @@ fn main() {
     }
 
     if !config.paths.is_empty() {
-        let threads = config.paths.iter().map(|path| {
-            let cloned_path = path.clone();
-            thread::spawn(move || {
-                watch(cloned_path.clone()).expect(&format!("Failed to watch {}", cloned_path.path));
+        let threads = config
+            .paths
+            .iter()
+            .map(|path| {
+                let cloned_path = path.clone();
+                thread::spawn(move || {
+                    watch(cloned_path.clone())
+                        .expect(&format!("Failed to watch {}", cloned_path.path));
+                })
             })
-        });
+            .collect::<Vec<JoinHandle<()>>>();
         for thread in threads {
             thread.join().unwrap_err();
         }
