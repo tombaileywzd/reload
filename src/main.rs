@@ -8,8 +8,19 @@ use std::process::Command;
 use std::time::Duration;
 use std::{fs, process, thread};
 
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(author, version)]
+struct Args {
+    /// Path to a config file
+    #[arg(short, long, default_value = "config.yaml")]
+    config_file: String,
+}
+
 fn main() {
-    let reload_config_file = Path::new("config.yaml");
+    let config_file = Args::parse().config_file;
+    let reload_config_file = Path::new(&config_file);
     let config = Config::from_file(reload_config_file).expect("Failed to load config");
 
     if !config.version.eq("0") {
@@ -81,7 +92,8 @@ struct Config {
 
 impl Config {
     fn from_file(file: &Path) -> Result<Self> {
-        let file_content = fs::read_to_string(file).context("Failed to read config file")?;
+        let file_content = fs::read_to_string(file)
+            .context(format!("Failed to read config file {}", file.display()))?;
         serde_yaml::from_str(&file_content).context("Failed to deserialize config file")
     }
 }
